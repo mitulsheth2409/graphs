@@ -1,8 +1,5 @@
 package com.company;
 
-import java.util.Optional;
-import java.util.Set;
-
 public class Eulerian<V extends Comparable<V>> {
   public static void main(String[] args) {
     final Graph<Integer> graph = new Graph<>(false);
@@ -30,7 +27,7 @@ public class Eulerian<V extends Comparable<V>> {
   }
 
   public String isEulerian() {
-    if (!isConnected()) {
+    if (!GraphUtils.isConnected(graph)) {
       return NOT_EULERIAN;
     }
 
@@ -40,20 +37,5 @@ public class Eulerian<V extends Comparable<V>> {
 
     // odd count can never be 1 in undirected graph
     return oddDegreeCount > 2L ? NOT_EULERIAN : (oddDegreeCount == 2L ? EULERIAN_PATH : EULERIAN_CYCLE);
-  }
-
-  private boolean isConnected() {
-    final Optional<V> anyVertexMaybe = graph.getAny();
-    if (!anyVertexMaybe.isPresent()) {
-      return true;
-    }
-
-    final Set<V> nonZeroDegreeVertices = graph.getAllNonZeroDegreeVertex();
-    if (nonZeroDegreeVertices.size() == 0) {
-      return true;
-    }
-
-    final DFS<V> dfs = new DFS<>(graph);
-    return dfs.perform(nonZeroDegreeVertices.iterator().next()).size() == graph.size();
   }
 }

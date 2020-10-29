@@ -106,12 +106,11 @@ public class Graph<V extends Comparable<V>> {
         final Node<V> targetNode = addNode(target);
         sourceNode.addOutgoingNeighbor(target);
         targetNode.addIncomingNeighbor(source);
-        numEdges++;
         if (!isDirected) {
             sourceNode.addIncomingNeighbor(target);
             targetNode.addOutgoingNeighbor(source);
-            numEdges++;
         }
+        numEdges++;
     }
 
     public void removeEdge(V source, V target) {
@@ -125,6 +124,7 @@ public class Graph<V extends Comparable<V>> {
             sourceNode.getIncomingNeighbors().remove(target);
             targetNode.getOutgoingNeighbors().remove(source);
         }
+        numEdges--;
     }
 
     public Set<V> vertices() {
@@ -162,6 +162,29 @@ public class Graph<V extends Comparable<V>> {
 
     public int size() {
         return size;
+    }
+
+    public Graph<V> getTranspose() {
+        if (!isDirected) {
+            throw new IllegalStateException("An undirected graph is its own transpose");
+        }
+        final Graph<V> transposeGraph = new Graph<>(true);
+        graph.forEach((val, node) -> {
+            node.incomingNeighbors.forEach(vertex -> transposeGraph.addEdge(val, vertex));
+            node.outgoingNeighbors.forEach(vertex -> transposeGraph.addEdge(vertex, val));
+        });
+        return transposeGraph;
+    }
+
+    public Graph<V> getUndirected() {
+        if (!isDirected) {
+            return this;
+        }
+        final Graph<V> undirectedGraph = new Graph<>(false);
+        graph.forEach((val, node) -> node.outgoingNeighbors.forEach(neighbor ->
+          undirectedGraph.addEdge(val, neighbor)
+        ));
+        return undirectedGraph;
     }
 
     public boolean isDirected() {
